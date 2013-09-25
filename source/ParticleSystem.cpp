@@ -39,7 +39,7 @@ namespace aso {
     void ParticleSystem::buildVerticies(const Particle & particle) {
         vertices.append(
             sf::Vertex(
-                sf::Vector2f(particle.position),
+                sf::Vector2f(particle.position) - sf::Vector2f(0.0f, particle.size / 2.0f),
                 particle.color
             )
         );
@@ -48,7 +48,7 @@ namespace aso {
             sf::Vertex(
                 sf::Vector2f(
                     particle.position.x - particle.size / 2,
-                    particle.position.y + particle.size),
+                    particle.position.y + particle.size) - sf::Vector2f(0.0f, particle.size / 2.0f),
                 particle.color
             )
         );
@@ -57,7 +57,7 @@ namespace aso {
             sf::Vertex(
                 sf::Vector2f(
                     particle.position.x + particle.size / 2,
-                    particle.position.y + particle.size),
+                    particle.position.y + particle.size) - sf::Vector2f(0.0f, particle.size / 2.0f),
                 particle.color
             )
         );
