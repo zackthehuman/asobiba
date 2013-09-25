@@ -9,10 +9,15 @@ set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -O")
 
 set(ASOBIBA_SOURCES
     source/Main.cpp
+    source/Particle.cpp
+    source/ParticleSystem.cpp
 )
 
 set(ASOBIBA_HEADERS
     include/Main.hpp
+    include/MathHelpers.hpp
+    include/Particle.hpp
+    include/ParticleSystem.hpp
 )
 
 source_group("Header Files" FILES ${ASOBIBA_HEADERS})
@@ -29,6 +34,16 @@ if(WIN32)
 endif(WIN32)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
+
+#
+# Apple-specific stuff
+#
+if( APPLE )
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++" )
+  set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++" )
+  set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -stdlib=libc++" )
+  set( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -stdlib=libc++" )
+endif( APPLE )
 
 find_package(SFML 2 COMPONENTS system window graphics REQUIRED)
 
