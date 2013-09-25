@@ -20,14 +20,53 @@ set(ASOBIBA_HEADERS
     include/ParticleSystem.hpp
 )
 
+set(SQUIRREL_DIR "${PROJECT_SOURCE_DIR}/extlibs/squirrel")
+set(SQUIRREL_FILES
+    # Squirrel core
+    ${SQUIRREL_DIR}/squirrel/sqapi.cpp
+    ${SQUIRREL_DIR}/squirrel/sqbaselib.cpp
+    ${SQUIRREL_DIR}/squirrel/sqclass.cpp
+    ${SQUIRREL_DIR}/squirrel/sqcompiler.cpp
+    ${SQUIRREL_DIR}/squirrel/sqdebug.cpp
+    ${SQUIRREL_DIR}/squirrel/sqfuncstate.cpp
+    ${SQUIRREL_DIR}/squirrel/sqlexer.cpp
+    ${SQUIRREL_DIR}/squirrel/sqmem.cpp
+    ${SQUIRREL_DIR}/squirrel/sqobject.cpp
+    ${SQUIRREL_DIR}/squirrel/sqstate.cpp
+    ${SQUIRREL_DIR}/squirrel/sqtable.cpp
+    ${SQUIRREL_DIR}/squirrel/sqvm.cpp
+
+    # Squirrel standard library
+    ${SQUIRREL_DIR}/sqstdlib/sqstdaux.cpp
+    ${SQUIRREL_DIR}/sqstdlib/sqstdblob.cpp
+    ${SQUIRREL_DIR}/sqstdlib/sqstdio.cpp
+    ${SQUIRREL_DIR}/sqstdlib/sqstdmath.cpp
+    ${SQUIRREL_DIR}/sqstdlib/sqstdrex.cpp
+    ${SQUIRREL_DIR}/sqstdlib/sqstdstream.cpp
+    ${SQUIRREL_DIR}/sqstdlib/sqstdstring.cpp
+    ${SQUIRREL_DIR}/sqstdlib/sqstdsystem.cpp
+)
+
+set(SQRAT_DIR "${PROJECT_SOURCE_DIR}/extlibs/sqrat")
+
+set(INCLUDE_DIRS
+  ${PROJECT_SOURCE_DIR}/include
+  ${SQUIRREL_DIR}/include
+  ${SQUIRREL_DIR}/squirrel
+  ${SQUIRREL_DIR}/sqstdlib
+  ${SQRAT_DIR}/include
+)
+
 source_group("Header Files" FILES ${ASOBIBA_HEADERS})
 source_group("Source Files" FILES ${ASOBIBA_SOURCES})
 
-add_executable(asobiba ${ASOBIBA_SOURCES} ${ASOBIBA_HEADERS})
+add_executable(asobiba
+  ${SQUIRREL_FILES}
+  ${ASOBIBA_SOURCES}
+  ${ASOBIBA_HEADERS}
+)
 
-include_directories(${PROJECT_SOURCE_DIR}/include)
-#include_directories(${PROJECT_SOURCE_DIR}/include/1)
-#include_directories(${PROJECT_SOURCE_DIR}/include/2)
+include_directories(${INCLUDE_DIRS})
 
 if(WIN32)
     set(SFML_STATIC_LIBRARIES TRUE)
