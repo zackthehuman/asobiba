@@ -8,13 +8,49 @@
 #include <iostream>
 #include <cstdlib>
 
+#include <squirrel.h>
+#include <sqstdmath.h>
+#include <sqrat.h>
+#include <cstdarg>
+
 #include <SFML/Graphics.hpp>
 
 const int SCREEN_WIDTH = 256;
 const int SCREEN_HEIGHT = 240;
 const int SCREEN_BPP = 32;
 
+void squirrelPrintFunction(HSQUIRRELVM vm, const SQChar *s, ...) {
+    va_list vl; 
+    va_start(vl, s);
+    vprintf(s, vl);
+    va_end(vl);
+    printf("\n");
+}
+
 int main(int argc, char** argv) {
+
+    HSQUIRRELVM vm = sq_open(1024);
+
+    if(vm) {
+        // Set print function
+        sq_setprintfunc(vm, squirrelPrintFunction, squirrelPrintFunction);
+
+        // Set up root table and standard libs
+        sq_pushroottable(vm);
+        sqstd_register_mathlib(vm); 
+        sq_pop(vm, 1);
+
+        // Set up Sqrat bindings
+        Sqrat::DefaultVM::Set(vm);
+
+        Sqrat::Script script;
+        try {
+            script.CompileFile("resources/scripts/hello.nut");
+            script.Run();
+        } catch(Sqrat::Exception & ex) {
+            std::cout << "Exception! " << ex.Message() << std::endl;
+        }
+    }
 
     sf::Clock clock;
     sf::VideoMode videoMode(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP);
@@ -112,6 +148,10 @@ int main(int argc, char** argv) {
         window.display();
 
     } // closes !quit loop
+
+    if(vm) {
+        sq_close(vm);
+    }
 
     return EXIT_SUCCESS;
 }

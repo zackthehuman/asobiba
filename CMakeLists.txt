@@ -75,6 +75,16 @@ endif(WIN32)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
 #
+# Copy content files to output directory
+#
+add_custom_command(
+  TARGET asobiba
+  POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E echo "Copying resources to output directory."
+  COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/resources" $<TARGET_FILE_DIR:asobiba>/resources
+)
+
+#
 # Apple-specific stuff
 #
 if( APPLE )
