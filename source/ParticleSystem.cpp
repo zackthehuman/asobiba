@@ -74,7 +74,7 @@ namespace aso {
     ParticleSystem::ParticleSystem()
         : vertices(sf::PrimitiveType::Triangles)
     {
-        particles.reserve(350);
+        particles.reserve(500);
     }
 
     void ParticleSystem::add(const aso::Particle & particle) {

@@ -91,6 +91,29 @@ int color_get_a(sf::Color * color) {
     return -1;
 }
 
+Sqrat::Table translateSFMLEventToSquirrelTable(HSQUIRRELVM vm, const sf::Event & sfmlEvent) {
+    Sqrat::Table eventTable(vm);
+
+    if(sfmlEvent.type == sf::Event::MouseButtonPressed) {
+        eventTable
+            .SetValue("type", "mouseButtonPressed");
+    } else if(sfmlEvent.type == sf::Event::MouseButtonReleased) {
+        eventTable
+            .SetValue("type", "mouseButtonReleased");
+    } else if(sfmlEvent.type == sf::Event::KeyPressed) {
+        eventTable
+            .SetValue("type", "keyPressed");
+    } else if(sfmlEvent.type == sf::Event::KeyReleased) {
+        eventTable
+            .SetValue("type", "keyReleased");
+    } else {
+        eventTable
+            .SetValue("type", "unknown");
+    }
+
+    return eventTable;
+}
+
 int main(int argc, char** argv) {
 
     HSQUIRRELVM vm = sq_open(1024);
@@ -146,6 +169,7 @@ int main(int argc, char** argv) {
 
         Sqrat::Script script;
         Sqrat::Function scriptedUpdateFunc;
+        Sqrat::Function scriptedEventHandlerFunc;
 
         try {
             script.CompileFile("resources/scripts/hello.nut");
@@ -160,6 +184,7 @@ int main(int argc, char** argv) {
         }
 
         scriptedUpdateFunc = Sqrat::Function(Sqrat::RootTable(vm), "update");
+        scriptedEventHandlerFunc = Sqrat::Function(Sqrat::RootTable(vm), "handleEvent");
             
         sf::Clock clock;
         sf::VideoMode videoMode(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP);
@@ -187,9 +212,10 @@ int main(int argc, char** argv) {
 
         aso::ParticleSystem particleSystem;
 
-        Sqrat::RootTable(vm).SetValue("particleSystem", &particleSystem);
-        Sqrat::RootTable(vm).SetValue("width", SCREEN_WIDTH);
-        Sqrat::RootTable(vm).SetValue("height", SCREEN_HEIGHT);
+        Sqrat::RootTable(vm)
+            .SetValue("particleSystem", &particleSystem)
+            .SetValue("width", SCREEN_WIDTH)
+            .SetValue("height", SCREEN_HEIGHT);
 
         while(!quit) {
 
@@ -242,8 +268,15 @@ int main(int argc, char** argv) {
                             window.getView()
                         );
 
-                        Sqrat::RootTable(vm).SetValue("mouseX", emissionPosition.x);
-                        Sqrat::RootTable(vm).SetValue("mouseY", emissionPosition.y);
+                        Sqrat::RootTable(vm)
+                            .SetValue("mouseX", emissionPosition.x)
+                            .SetValue("mouseY", emissionPosition.y);
+                    }
+
+                    if(!scriptedEventHandlerFunc.IsNull()) {
+                        Sqrat::Table translatedEvent = translateSFMLEventToSquirrelTable(vm, event);
+                        Sqrat::Object & objectEventTable = translatedEvent;
+                        scriptedEventHandlerFunc.Evaluate<Sqrat::Object>(objectEventTable);
                     }
 
                 } // closes event processing loop

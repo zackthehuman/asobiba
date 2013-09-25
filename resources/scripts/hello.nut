@@ -27,3 +27,7 @@ function testBindings() {
 }
 
 testBindings();
+
+function handleEvent(event) {
+    ::print(event.type);
+}
